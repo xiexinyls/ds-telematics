@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import csv
 
+
 np.set_printoptions(precision=4)
 
 DATAPATH='../mlproject-data/drivers'
@@ -50,16 +51,18 @@ def getFeature( xy ):
 
 if __name__ == "__main__":
 
-   for i in range(50):
-      xy = readData(1, i+1)
-      [ v, dv, ang, dang ] = getFeature(xy)
+   #for i in range(50):
+      #xy = readData(1, i+1)
+      #[ v, dv, ang, dang ] = getFeature(xy)
 
-      ind = np.logical_and( (np.abs(dang) > 10), (np.abs(dang) < 30) )
-      print(i)
-      #print(ind)
-      plt.hist( v[ind] )
-      plt.savefig('../plot/'+('%03i' % i)+'.png', dpi=150, bbox_inches='tight', pad_inches=0)
-      plt.clf()
+      #ind = np.logical_and( (np.abs(dang) > 10), (np.abs(dang) < 30) )
+      #print(i)
+      ##print(ind)
+      #plt.hist( v[ind] )
+      #plt.savefig('../plot/'+('%03i' % i)+'.png', dpi=150, bbox_inches='tight', pad_inches=0)
+      #plt.clf()
+   xy = readData(1,1)
+   print(xy)
 
    #plt.plot(xy[:,0], xy[:,1])
    #plt.show()
