@@ -11,15 +11,15 @@ to identify the false or anomaly trips.
 
 Here is my code to solve this driver fingerprint extraction problem.
 
-`plot/` is blank directory used to save trip data visualization figures.
+**`plot/`** is blank directory used to save trip data visualization figures.
 
-`drivers/` is a test dataset. Sub-directory is the driver number. Under `drivers/1/`, there are 200 cvs
+**`drivers/`** is a test dataset. Sub-directory is the driver number. Under `drivers/1/`, there are 200 cvs
 trip files for driver number one.
 
-`data-prep.py` is a Python script used to do feature extraction and trip data visualization. 
+**`data-prep.py`** is a Python script used to do feature extraction and trip data visualization. 
 The feature data will be saved to a JSON file `dictfeature`.
 
-`data-predict.py` is a Python script used to determine whether the 200 trip data under 
+**`data-predict.py`** is a Python script used to determine whether the 200 trip data under 
 each driver directory is anomaly or not with many anomaly detection methods. It will read the `dictfeature`
 output produced by `data-prep.py`.
 
