@@ -188,7 +188,7 @@ if __name__ == "__main__":
    listfstr = np.array( f.read().splitlines() )
    nlistfstr = len( listfstr )
 
-   featurename = 'feature3'
+   featurename = 'dictfeature'
 
    datapath='./'+featurename
    featuredict = readData( datapath )
@@ -290,7 +290,6 @@ if __name__ == "__main__":
 
       label = clf.predict( traindata1[:,selfeatureind] ).astype(int)
       #label = clf.predict( traindata1 ).astype(int)
-
 
 
 
