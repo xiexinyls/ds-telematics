@@ -1,6 +1,6 @@
 # Driver Telematics Analysis Project
 
-AXA has raised a competition in [Kaggle](www.kaggle.com) to identify trips which are not from 
+AXA has raised a competition on [Kaggle](www.kaggle.com) to identify trips which are not from 
 the driver of interest. The dataset AXA provides over 50,000 anonymized driver trips, expressed 
 as instant coordinate, that is, a pair of (x,y) coordinate per second, from which we can 
 extract useful features, such as velocity and acceleration. Each driver is associated with 200 trips, including
