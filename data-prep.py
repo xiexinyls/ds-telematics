@@ -17,6 +17,8 @@ import json
 
 np.set_printoptions(precision=4)
 plotpath = './plot'
+#datapath='../mlproject-data/drivers'
+datapath='./drivers'
 
 #parameter setting for high dimensional feature extraction
 vbins = np.linspace(5,75,21)
@@ -248,26 +250,20 @@ class NumPyArangeEncoder(json.JSONEncoder):
 
 if __name__ == "__main__":
 
-   datapath='../mlproject-data/drivers'
-
-#get the driver No. list from drvlist file
-   with open('drvlist', 'r') as file_drvlist:
-       drvlist = []
-       for line in file_drvlist:
-           drvlist.append( line.strip() )
+    drvlist = os.listdir(datapath)
 
 #Extract features for each driver and
 #Save it into a JSON object file for modeling later
-   ndrvlist = len( drvlist )
-   featuredict = {}
-   for i in range(ndrvlist):
-   #for i in [0]:
+    ndrvlist = len( drvlist )
+    featuredict = {}
+    for i in range(ndrvlist):
+    #for i in [0]:
       driverno = drvlist[i]
       print( "Reading Driver "+driverno )
       feature = getDriver(datapath, driverno )
       featuredict[ driverno ] = feature
       
-   json.dump(featuredict, open("dictfeature",'w'), cls=NumPyArangeEncoder)
+    json.dump(featuredict, open("dictfeature",'w'), cls=NumPyArangeEncoder)
 
 
 
