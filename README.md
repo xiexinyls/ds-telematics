@@ -13,9 +13,9 @@ Here is my code to solve this driver fingerprint extraction problem.
 
 **`plot/`** is blank directory used to save trip data visualization figures.
 
-**`drivers/`** is a trip dataset for many drivers. Sub-directory names represent the driver number. There are thousands
-of drivers but I only put the data for driver No. 1 for testing. Under `drivers/1/`, there are 200 cvs trip
-files for driver number one. Data for other drivers can be downloaded from
+**`drivers/`** is a trip dataset directory. Sub-directory names represent the driver number. There are thousands
+of drivers but I only put one dataset of driver No. 1 for testing. Under `drivers/1/`, there are 200 cvs trip
+files for driver number one. Complete trip dataset can be downloaded from
 [here](https://www.kaggle.com/c/axa-driver-telematics-analysis/data).
 
 **`data-prep.py`** is a Python script used to do data cleanning, feature extraction and trip data visualization. 
