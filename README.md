@@ -25,3 +25,6 @@ The feature data will be saved to a JSON file `dictfeature`.
 each driver directory is anomaly or not with many anomaly detection methods. It will read the `dictfeature`
 output produced by `data-prep.py`.
 
+If you want to know more about the methods and the code, I have described how I deal with this problem in more details
+on [my personal web site] (http://xinxie.tk/datasci/driver_telematics).
+
