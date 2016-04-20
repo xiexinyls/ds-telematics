@@ -15,7 +15,6 @@ import os
 import json
 
 
-np.set_printoptions(precision=4)
 plotpath = './plot'
 #datapath='../mlproject-data/drivers'
 datapath='./drivers'
@@ -24,6 +23,8 @@ datapath='./drivers'
 vbins = np.linspace(5,75,21)
 dvbins = np.linspace(-5,5,21)
 danglebins = np.linspace(-5,5,21)
+
+np.set_printoptions(precision=4)
 
 def readData( tripfilename ):
     '''
@@ -37,28 +38,29 @@ def readData( tripfilename ):
 
 
 def procData( xy ):
-   '''
-   turn (x,y) data into meaningful information
-   (x,y) list -> velocity, acceleration, angle, diff angle
-   '''
-   x = xy[:,0]
-   y = xy[:,1]
-   dx = np.diff( x )
-   dy = np.diff( y )
-#convert to velocity v in MPH
-   v = 2.23*np.sqrt(dx**2+dy**2)
-   v = np.where( v > 90, np.mean(v), v)
-#and accelaeration 
-   dv = np.diff( v )
+    '''
+    turn (x,y) data into meaningful information with data cleaning
+    (x,y) list -> velocity, acceleration, angle, diff angle
+    '''
+    x = xy[:,0]
+    y = xy[:,1]
+    dx = np.diff( x )
+    dy = np.diff( y )
+    tomph = 3600./1609
+    #convert to velocity v in MPH
+    v = tomph*np.sqrt(dx**2+dy**2)
+    v = np.where( v > 90, np.mean(v), v)
+    #and accelaeration 
+    dv = np.diff( v )
 
-#let the v dim equal to acceleration dim
-   v = (v[1:]+v[:-1])/2.
+    #let the v dim equal to acceleration dim
+    v = (v[1:]+v[:-1])/2.
 
-#convert to angles and delta angles
-   ang = np.arctan2(dy,dx)/np.pi*180
+    #convert to angles and delta angles
+    ang = np.arctan2(dy,dx)/np.pi*180
 
-   dang = np.empty( len(v) )
-   for i in range(len(v)):
+    dang = np.empty( len(v) )
+    for i in range(len(v)):
       if ( np.abs( ang[i+1]-ang[i] ) > 180 ):
          if ( ang[i] < 0):
             dang[i] = ang[i+1]-360-ang[i]
@@ -66,14 +68,15 @@ def procData( xy ):
             dang[i] = ang[i+1]+360-ang[i]
       else:
          dang[i] = ang[i+1]-ang[i]
-   dang = np.where( np.abs(dang) < 90, dang, 0 )
-   ang = (ang[1:]+ang[:-1])/2.
 
-   return [ v, dv, ang, dang ]
+    dang = np.where( np.abs(dang) < 90, dang, 0 )
+    ang = (ang[1:]+ang[:-1])/2.
+
+    return [ v, dv, ang, dang ]
 
 
 
-def getFeature( v, dv, angle, dangle):
+def getFeature( v, dv, angle, dangle, opt=1):
    '''
    (v, dv, angle, dangle) array -> advanced features
    '''
@@ -81,52 +84,57 @@ def getFeature( v, dv, angle, dangle):
    #v = savitzky_golay(v, 5, 3)
    #ang = savitzky_golay(ang, 11, 3)
 
+   
    meanvdangle = np.mean( np.abs(v*dangle) )
    absdangle = np.mean( np.abs( dangle ) )
 
+   if (opt==1):
+   
 #simple low dim feature statistics
-   vmean = np.mean(v)
-   vstd  = np.std(v)
-   vskew = st.skew(v)
+       vmean = np.mean(v)
+       vstd  = np.std(v)
+       vskew = st.skew(v)
 #accelaeration mean
-   apind = dv>0
-   if ( np.sum(apind) == 0):
-      ap = 0
-   else:
-      ap = np.mean( dv[apind] )
+       apind = dv>0
+       if ( np.sum(apind) == 0):
+          ap = 0
+       else:
+          ap = np.mean( dv[apind] )
 #breaking mean
-   anind = dv<0
-   if ( np.sum(anind) == 0):
-      an = 0
+       anind = dv<0
+       if ( np.sum(anind) == 0):
+          an = 0
+       else:
+          an = np.mean( dv[anind] )
+
+       if ( len(v) < 5 ):
+          vmean = 0
+          vstd = 0
+          vskew = 0
+          ap = 0
+          an = 0
+          absdangle = 0
+
+#output low dim
+       return [ vmean, vstd, vskew ]
+       #return [ vmean, vstd, vskew, ap75, an25, absdangle, meanvdangle ]
+       #return [ vmean, vstd, vskew, ap, an, absdangle ]
+
    else:
-      an = np.mean( dv[anind] )
-
-   if ( len(v) < 5 ):
-      vmean = 0
-      vstd = 0
-      vskew = 0
-      ap = 0
-      an = 0
-      absdangle = 0
-
 # high dim feature extraction
 #for speed
-   vhist, vbin = np.histogram( v, bins=vbins, density=True )
-   if np.any( np.isnan( vhist ) ):
-      vhist[:] = 0
+       vhist, vbin = np.histogram( v, bins=vbins, density=True )
+       if np.any( np.isnan( vhist ) ):
+          vhist[:] = 0
 
 #for +/- acceleration
-   dvhist, dvbin = np.histogram( dv, bins=dvbins, density=True )
-   if np.any( np.isnan( dvhist ) ):
-      dvhist[:] = 0
+       dvhist, dvbin = np.histogram( dv, bins=dvbins, density=True )
+       if np.any( np.isnan( dvhist ) ):
+          dvhist[:] = 0
 
 #choose what features to output
-#output low dim
-   return [ vmean, vstd, vskew ]
-   #return [ vmean, vstd, vskew, ap75, an25, absdangle, meanvdangle ]
-   #return [ vmean, vstd, vskew, ap, an, absdangle ]
 #output high dim
-   #return np.append(vhist, dvhist)
+       return np.append(vhist, dvhist)
 
 
 
@@ -228,14 +236,14 @@ def getDriver( drvpath, strdriverno ):
 
     outfeature = []
     for i in range(ntrip):
-      xy = readData( trippath+'/'+tripfnlist[i] )
-      [ v, dv, ang, dang ] = procData(xy)
+        xy = readData( trippath+'/'+tripfnlist[i] )
+        [ v, dv, ang, dang ] = procData(xy)
 
 #turn of visualization for now.
       #plotTrip( xy, v, dv, ang, dang, strdriverno, i)
 
-      feature = getFeature(v, dv, ang, dang)
-      outfeature.append(feature)
+        feature = getFeature(v, dv, ang, dang)
+        outfeature.append(feature)
 
     return np.array( outfeature )
 
@@ -248,22 +256,24 @@ class NumPyArangeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-if __name__ == "__main__":
 
+def prepData( datapath, outputname):
     drvlist = os.listdir(datapath)
 
-#Extract features for each driver and
-#Save it into a JSON object file for modeling later
     ndrvlist = len( drvlist )
     featuredict = {}
     for i in range(ndrvlist):
     #for i in [0]:
-      driverno = drvlist[i]
-      print( "Reading Driver "+driverno )
-      feature = getDriver(datapath, driverno )
-      featuredict[ driverno ] = feature
-      
-    json.dump(featuredict, open("dictfeature",'w'), cls=NumPyArangeEncoder)
+        driverno = drvlist[i]
+        print( "Reading Driver "+driverno )
+        feature = getDriver(datapath, driverno )
+        featuredict[ driverno ] = feature
+  
+    json.dump(featuredict, open(outputname,'w'), cls=NumPyArangeEncoder)
 
 
+
+if __name__ == "__main__":
+
+    prepData( datapath, 'dictfeature' )
 
